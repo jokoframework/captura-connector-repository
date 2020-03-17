@@ -1,0 +1,32 @@
+<crdef>
+  <connections>
+    <connection id="Postgres CRInput">
+      <url>jdbc:postgresql://127.0.0.1:5432/CRInput</url>
+      <user>postgres</user>
+      <pass>postgres</pass>
+      <driver>org.postgresql.Driver</driver>
+    </connection>
+    <connection id="Postgres MF">
+      <url>jdbc:postgresql://127.0.0.1:5432/MF</url>
+      <user>postgres</user>
+      <pass></pass>
+      <driver>org.postgresql.Driver</driver>
+    </connection>
+  </connections>
+  <extractionUnits>
+    <extUnit id="X_CAT31" connectionId="Postgres CRInput" active="true" stopOnError="false" frequencyInSeconds="20" insertBatchSize="500">
+      <sql>select * from foo.customers</sql>
+      <description>Customers</description>
+      <columns>
+        <column sourceColumn="id" targetColumn="id" targetType="NUMBER" triggerUpdate="false" isPKMember="true"/>
+      </columns>
+    </extUnit>
+    <extUnit id="X_CAT45" connectionId="Postgres MF" active="true" stopOnError="false" frequencyInSeconds="20" insertBatchSize="500">
+      <sql>select * from reports.queries</sql>
+      <description>Customers</description>
+      <columns>
+        <column sourceColumn="id" targetColumn="id" targetType="NUMBER" triggerUpdate="false" isPKMember="true"/>
+      </columns>
+    </extUnit>
+  </extractionUnits>
+</crdef>

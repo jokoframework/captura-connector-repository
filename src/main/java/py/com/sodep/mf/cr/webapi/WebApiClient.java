@@ -420,4 +420,7 @@ public class WebApiClient {
 			}
 		}
 	}
+	public void close() {
+
+	}
 }

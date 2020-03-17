@@ -1,0 +1,20 @@
+<crdef>
+  <connections>
+    <connection id="myPostgres">
+      <url>jdbc:postgresql://localhost:5432/dvdrental</url>
+      <user>postgres</user>
+      <pass>postgres</pass>
+      <driver>org.postgresql.Driver</driver>
+    </connection>
+  </connections>
+  <extractionUnits>
+    <extUnit id="dvrental" connectionId="myPostgres" active="true" stopOnError="false" frequencyInSeconds="20" insertBatchSize="500">
+      <sql>SELECT film_id,title FROM public.film</sql>
+      <description>dvrental</description>
+      <columns>
+        <column sourceColumn="film_id" targetColumn="film_id" targetType="NUMBER" triggerUpdate="false" isPKMember="true"/>
+        <column sourceColumn="title" targetColumn="title" targetType="STRING" triggerUpdate="false" isPKMember="false"/>
+      </columns>
+    </extUnit>
+  </extractionUnits>
+</crdef>
