@@ -1,13 +1,27 @@
 package py.com.sodep.mf.cr;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
+import py.com.sodep.mf.cr.CRServerLauncher.ConfError;
+import py.com.sodep.mf.cr.CRServerLauncher.PropReader;
+import py.com.sodep.mf.cr.conf.CRConfigurationParser;
+import py.com.sodep.mf.cr.conf.ConnectorDefinition;
+import py.com.sodep.mf.cr.conf.DefinitionDoesntMatchException;
+import py.com.sodep.mf.cr.webadmin.CRWebAdminServer;
 import py.com.sodep.mf.cr.webapi.WebApiClient;
 import py.com.sodep.mf.cr.webapi.exception.RestAuhtorizationException;
 import py.com.sodep.mf.cr.webapi.exception.WebApiException;
@@ -48,34 +62,207 @@ public class CRServerLauncher {
 	}
 	
 	@Bean
-    void service_Launcher() {
-    	DOMConfigurator.configure("log4j.xml");
-		restClient = new WebApiClient("https://captura-forms.com/mf/","matias.irala.aveiro@gmail.com", "luca es del milan");
-		logger.info("Testing connection...");
-		boolean success;
-		try {
-			success = restClient.login();
-			if (success) {
-				logger.info("Successfully logged in to ");
-				logger.info("Login successful with user ");
-				try {
-					restClient.logout();
-				} catch (WebApiException e) {
-					logger.error("Problems on the first logout", e);
-					System.exit(1);
-				} catch (RestAuhtorizationException e) {
-					logger.error("Problems on the first logout", e);
-					System.exit(1);
+	public void launcher() throws Exception {
+		//Importa las propiedades de mf_cr.propierties
+		Properties properties = new Properties();
+		Properties p = loadProperties(properties, propertyFilePath);
+		
+		if (p == null) {
+			System.exit(CRServerErrors.PROPERTY_FILE_NOT_FOUND);
+		}
+		//Se extraen las propiedades de mf_cr.propierties
+		String mode = PropReader.mode(p);
+		String log4jPath = ((String) p.get(PROP_LOG4J)).trim();
+		String restBaseURL = (String) p.get(PROP_BASEURL);
+		String restUser = (String) p.get(PROP_REST_USER);
+		String restPass = (String) p.get(PROP_REST_PASS);
+		String dbUser = (String) p.get(PROP_DB_USER);
+		String dbPass = (String) p.get(PROP_DB_PASS);
+		String dbFilePath = (String) p.get(PROP_DB_FILEPATH);
+		String xmlFile = (String) p.get(PROP_XML_FILE);
+		boolean webAdminWakeOnStartup = Boolean.parseBoolean((String) p.get(PROP_WEBADMIN_WAKE_ON_STARTUP));
+		int webAdminPort = Integer.parseInt((String) p.get(PROP_WEBADMIN_PORT));
+		String webAdminUser = (String) p.get(PROP_WEBADMIN_USER);
+		String webAdminPassword = (String) p.get(PROP_WEBADMIN_PASSWORD);
+		Long appId = PropReader.applicationId(p);
+		boolean authenticateOnStartup = PropReader.authenticateOnStartup(p);
+
+		DOMConfigurator.configure(log4jPath);	//Se configura el logger
+		if (testingMode) {
+			WebApiClient.trustAll();
+		}
+		
+		WebApiClient restClient = new WebApiClient(restBaseURL, restUser, restPass);
+		//Login a mf_cr.rest.baseURL
+		if (authenticateOnStartup) {
+			logger.info("Testing connection...");
+			boolean success;
+			try {
+				success = restClient.login();
+				if (success) {
+					logger.info("Successfully logged in to " + restBaseURL);
+					logger.info("Login successful with user " + restUser);
+					try {
+						restClient.logout();
+					} catch (WebApiException e) {
+						logger.error("Problems on the first logout", e);
+						System.exit(CRServerErrors.FIRST_LOGIN_FAILED);
+					} catch (RestAuhtorizationException e) {
+						logger.error("Problems on the first logout", e);
+						System.exit(CRServerErrors.FIRST_LOGIN_FAILED);
+					}
+				} else {
+					logger.error("Couldn't authenticate to the server");
+					System.exit(CRServerErrors.FIRST_LOGIN_FAILED);
 				}
-			} else {
-				logger.error("Couldn't authenticate to the server");
-				System.exit(1);
+			} catch (IOException e) {
+				logger.error("Couldn't connect to MF server at " + restBaseURL);
+				logger.debug("Couldn't connect to MF server at " + restBaseURL, e);
+				System.exit(CRServerErrors.FIRST_LOGIN_FAILED);
 			}
-		} catch (IOException e) {
-			logger.error("Couldn't connect to MF server at ");
-			logger.debug("Couldn't connect to MF server at ", e);
-			System.exit(1);
+
+		}
+		logger.info("Starting Connector Repository");
+
+		CRServer server = null;
+		CRWebAdminServer webAdminServer = null;
+		ConnectorDefinition desDefinition = null;
+		
+		try {
+			server = new CRServer(restClient, dbUser, dbPass, dbFilePath, appId);
+			
+			if (mode.equals("XML")) {
+				CRConfigurationParser parser = new CRConfigurationParser();
+
+				FileReader file = new FileReader(xmlFile);
+				desDefinition = parser.parse(file);
+				desDefinition.setSourceFile(xmlFile);
+				server.configure(desDefinition);
+				int countOfStartedThreads = server.start();
+				if (countOfStartedThreads > 0) {
+					osSignalhandler = new OSSignalHandler(server);
+					osSignalhandler.initializeOSSignals();
+				} else {
+					logger.warn("There is no active extraction unit.");
+				}
+			}
+			
+			if (webAdminWakeOnStartup) {
+				webAdminServer = new CRWebAdminServer(webAdminPort, webAdminUser, webAdminPassword, desDefinition);
+				osSignalhandler.setWebAdminServer(webAdminServer);
+				webAdminServer.start();
+			}
+			
+		} catch (Throwable e) {
+
+			if (server != null) {
+				try {
+					server.shutdown();
+				} catch (InterruptedException e1) {
+					// do nothing, we are shutting down
+				}
+			}
+			
+			if (webAdminServer != null) {
+				try {
+					webAdminServer.stop();
+				} catch (Exception webAdminException) {
+					// do nothing, we are shutting down 
+				}
+			}
+			
+			
+			if (e instanceof DefinitionDoesntMatchException) {
+				DefinitionDoesntMatchException ex = (DefinitionDoesntMatchException) e;
+				System.out.println(e.getMessage());
+				ObjectMapper mapper = new ObjectMapper();
+				ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+
+				try {
+					System.out.println("******* REMOTE DEFINITION *******");
+					String json = writer.writeValueAsString(ex.getRemoteDefinition().getFields());
+					System.out.println(json);
+					System.out.println("******* SQL BASED DEFINITION *******");
+					json = writer.writeValueAsString(ex.getDefinitionBasedOnExtractionUnit().getFields());
+					System.out.println(json);
+
+				} catch (JsonGenerationException e1) {
+					logger.fatal("Couldn't report user error DefinitionDoesntMatchException because of "
+							+ e1.getClass().getName(), e);
+				} catch (JsonMappingException e1) {
+					logger.fatal("Couldn't report user error DefinitionDoesntMatchException because of "
+							+ e1.getClass().getName(), e);
+				} catch (IOException e1) {
+					logger.fatal("Couldn't report user error DefinitionDoesntMatchException because of "
+							+ e1.getClass().getName(), e);
+				}
+
+			} else if (e instanceof ConfError) {
+				System.out.println(e.getMessage());
+			} else {
+				logger.error("" + e.getClass().getName() + ": " + e.getMessage(), e);
+			}
+			System.exit(CRServerErrors.CONFIGURATION_ERROR);
+		}
+	}
+	public static class ConfError extends RuntimeException {
+		public ConfError(String msg) {
+			super(msg);
 		}
 	}
 
+	public static class PropReader {
+		public static String mode(Properties p) {
+			Object modeO = p.get(PROP_MODE);
+			String mode = ((String) modeO).toString();
+			if (!mode.equals("XML")) {
+				throw new ConfError(mode + " is not a valid mode. XML is currently the only supported mode");
+			}
+			return (String) mode;
+		}
+
+		public static boolean authenticateOnStartup(Properties p) {
+			String authenticateOnStartStr = ((String) p.get(PROP_AUTHENTICATE_ON_STARTUP)).trim();
+			try {
+				return new Boolean(authenticateOnStartStr);
+			} catch (IllegalArgumentException e) {
+				throw new ConfError("The property " + PROP_AUTHENTICATE_ON_STARTUP + " must be either true or false");
+			}
+		}
+
+		public static Long applicationId(Properties p) {
+			String applicationIdStr = ((String) p.get(PROP_REST_APP_ID)).trim();
+			try {
+				Long appId = Long.parseLong(applicationIdStr);
+				return appId;
+			} catch (NumberFormatException e) {
+				throw new ConfError("The property " + PROP_REST_APP_ID + " must be an integer value ");
+			}
+		}
+	}
+
+	private static Properties loadProperties(Properties properties, String propertyFilePath) {
+		FileInputStream in = null;
+		try {
+			in = new FileInputStream(propertyFilePath);
+			properties.load(in);
+			return properties;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace(System.err);
+
+		} catch (IOException e) {
+			e.printStackTrace(System.err);
+
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					// do nothing here
+				}
+			}
+
+		}
+		return null;
+	}
 }

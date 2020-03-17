@@ -60,7 +60,7 @@ public class MultiDBManager {
 
 	private Connection open(CRConnection connectionDescription) throws ConnectionException {
 		try {
-			Class<?> forName = Class.forName(connectionDescription.getDriver());
+			Class.forName(connectionDescription.getDriver());
 			Connection connection = DriverManager.getConnection(connectionDescription.getUrl(),
 					connectionDescription.getUser(), connectionDescription.getPass());
 			return connection;
