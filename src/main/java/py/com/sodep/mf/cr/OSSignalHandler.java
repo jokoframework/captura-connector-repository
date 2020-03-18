@@ -1,14 +1,15 @@
 package py.com.sodep.mf.cr;
 
 import org.apache.commons.lang.SystemUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import py.com.sodep.mf.cr.webadmin.CRWebAdminServer;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
 public class OSSignalHandler implements SignalHandler {
-	private static final Logger logger = Logger.getLogger(OSSignalHandler.class);
+	private static final Logger logger = LogManager.getLogger(OSSignalHandler.class);
 
 	private final CRServer server;
 	private CRWebAdminServer webAdminServer;

@@ -16,7 +16,8 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import py.com.sodep.mf.cr.conf.CRColumn;
 import py.com.sodep.mf.cr.conf.CRConnection;
@@ -42,7 +43,7 @@ import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
 public class CRServer implements SignalHandler {
-	private static final Logger logger = Logger.getLogger(CRServer.class);
+	private static final Logger logger = LogManager.getLogger(CRServer.class);
 
 	private final WebApiClient restClient;
 	private final MFWebApiLookupFacade lookupRest;

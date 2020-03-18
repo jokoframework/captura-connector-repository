@@ -13,8 +13,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import py.com.sodep.mf.cr.conf.CRConnection;
 import py.com.sodep.mf.cr.conf.TemporalConfigurationError;
@@ -25,7 +25,7 @@ import py.com.sodep.mf.exchange.MFLoookupTableDefinition;
 
 public class MultiDBManager {
 
-	private static final Logger logger = Logger.getLogger(MultiDBManager.class);
+	private static final Logger logger = LogManager.getLogger(MultiDBManager.class);
 	private final ConcurrentHashMap<String, CRConnection> connectionMap;
 
 	public MultiDBManager() {
@@ -158,47 +158,5 @@ public class MultiDBManager {
 		}
 		PreparedStatement stmt = conn.prepareStatement(sqlCount);
 		return new PreparedNamedStatement(indexMap, stmt);
-
-	}
-
-	public static void main(String[] args) {
-		DOMConfigurator.configure("log4j.xml");
-		CRConnection connectionDescription = new CRConnection();
-		connectionDescription.setDriver("com.mysql.jdbc.Driver");
-		connectionDescription.setUrl("jdbc:mysql://127.0.0.1:3306/mf_test");
-		connectionDescription.setUser("root");
-		connectionDescription.setPass("mspass");
-		connectionDescription.setId("testMysql");
-
-		MultiDBManager manager = new MultiDBManager();
-		try {
-			manager.register(connectionDescription, true);
-			Connection conn = manager.open(connectionDescription.getId());
-			Set<String> cols = new TreeSet<String>();
-			cols.add("customer_id");
-			PreparedNamedStatement stmt = manager.prepareCountSelectOnColumns(conn, "select * from clients", cols);
-			HashMap<String, Object> vals = new HashMap<String, Object>();
-			vals.put("customer_id", 1);
-			stmt.fill(vals, true);
-			ResultSet rs = stmt.executeQuery();
-			if (rs.next()) {
-				int count = rs.getInt(1);
-				if (count > 0) {
-					System.out.println("Have data");
-				} else {
-					System.out.println("Doesn't have data");
-				}
-			}
-		} catch (TemporalConfigurationError e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ConnectionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 	}
 }

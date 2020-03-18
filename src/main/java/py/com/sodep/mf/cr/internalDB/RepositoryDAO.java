@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.h2.jdbcx.JdbcConnectionPool;
 
 import py.com.sodep.mf.cr.DynaResultSet;
@@ -30,7 +31,7 @@ import py.com.sodep.mf.cr.jdbc.PreparedNamedStatement;
 
 public class RepositoryDAO {
 
-	private static final Logger logger = Logger.getLogger(RepositoryDAO.class);
+	private static final Logger logger = LogManager.getLogger(RepositoryDAO.class);
 	public static final String META_COLUMN_PREFIX = "META_";
 	public static final String USER_COLUMN_PREFIX = "U_";
 

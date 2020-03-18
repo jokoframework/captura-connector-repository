@@ -5,8 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -28,12 +28,11 @@ import py.com.sodep.mf.cr.webapi.exception.WebApiException;
 
 @SpringBootApplication
 public class CRServerLauncher {
-	private static final Logger logger = Logger.getLogger(CRServerLauncher.class);
+	private static final Logger logger = LogManager.getLogger(CRServerLauncher.class);
 	
 	private static String propertyFilePath = "conf/mf_cr.properties"; //path a las configuraciones
 	
 	public static final String PROP_MODE = "mf_cr.mode";
-	public static final String PROP_LOG4J = "mf_cr.log4jFile";	//Ubicación del archivo xml que configura log4j
 	public static final String PROP_BASEURL = "mf_cr.rest.baseURL";	//URL de captura
 	public static final String PROP_REST_APP_ID = "mf_cr.rest.applicationId";	//Id de captura
 	public static final String PROP_REST_USER = "mf_cr.rest.user";	//Usuario de cuenta captura
@@ -55,8 +54,6 @@ public class CRServerLauncher {
 	// trust on all certificates
 	private static boolean testingMode = true;
 	
-	private WebApiClient restClient;
-	
 	public static void main(String[] args) {
 		SpringApplication.run(CRServerLauncher.class, args);
 	}
@@ -72,7 +69,6 @@ public class CRServerLauncher {
 		}
 		//Se extraen las propiedades de mf_cr.propierties
 		String mode = PropReader.mode(p);
-		String log4jPath = ((String) p.get(PROP_LOG4J)).trim();
 		String restBaseURL = (String) p.get(PROP_BASEURL);
 		String restUser = (String) p.get(PROP_REST_USER);
 		String restPass = (String) p.get(PROP_REST_PASS);
@@ -87,7 +83,6 @@ public class CRServerLauncher {
 		Long appId = PropReader.applicationId(p);
 		boolean authenticateOnStartup = PropReader.authenticateOnStartup(p);
 
-		DOMConfigurator.configure(log4jPath);	//Se configura el logger
 		if (testingMode) {
 			WebApiClient.trustAll();
 		}

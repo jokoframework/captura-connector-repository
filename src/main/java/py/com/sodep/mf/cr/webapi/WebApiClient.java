@@ -22,7 +22,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -52,7 +53,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 //Para conectarse a mf_cr.rest.baseURL
 public class WebApiClient {
 
-	private static final Logger logger = Logger.getLogger(WebApiClient.class);
+	private static final Logger logger = LogManager.getLogger(WebApiClient.class);
 	private String baseURL;
 	private String encoding = "UTF-8";
 	private String user;

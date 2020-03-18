@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+  <Appenders>
+	<RollingFile
+	    name="file"
+	    fileName="logs/app.log"
+	    filePattern="logs/app.log.%d{yyyy-MM-dd}.log.gz"
+	    ignoreExceptions="false">
+	    <PatternLayout>
+	        <Pattern>%d{yyyy-MM-dd HH:mm:ss} [%c] %-5p - %m%n</Pattern>
+	    </PatternLayout>
+	    <Policies>
+	        <TimeBasedTriggeringPolicy filePattern="logs/app.log.%d{yyyy-MM-dd}.log.gz" />
+	    </Policies>
+	    <DefaultRolloverStrategy max="5" />
+	</RollingFile>
+    <Console name="console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%c] %-5p - %m%n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Logger name="org.springframework" level="info"/>
+	<Logger name="org.hibernate" level="info"/>
+	<Logger name="org.hibernate.ejb" level="info"/>
+	<Logger name="org.hibernate.cfg" level="info"/>
+	<Logger name="org.hibernate.tool.hbm2ddl" level="info"/>
+	<Logger name="py.com.sodep.mobileforms" level="debug"/>
+	<Logger name="org.apache.commons.beanutils" level="info"/>
+	<Logger name="py.com.sodep.mf.cr" level="debug"/>
+    <Root level="debug">
+      <AppenderRef ref="console"/>
+      <AppenderRef ref="file"/>
+    </Root>
+  </Loggers>
+</Configuration>
