@@ -2,7 +2,7 @@ package py.com.sodep.mf.cr.conf;
 
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import py.com.sodep.mf.cr.CRUtilities;
 import com.fasterxml.jackson.annotation.JsonProperty;
 

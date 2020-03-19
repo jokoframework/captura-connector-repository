@@ -3,7 +3,7 @@ package py.com.sodep.mf.cr.conf;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class ConnectorDefinition {
 	private List<CRConnection> connections;
