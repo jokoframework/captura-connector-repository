@@ -25,19 +25,16 @@ import javax.net.ssl.X509TrustManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-
-import py.com.sodep.mf.cr.webapi.exception.RestAuhtorizationException;
-import py.com.sodep.mf.cr.webapi.exception.WebApiException;
-import py.com.sodep.mf.exchange.ExchangeConstants;
-import py.com.sodep.mf.exchange.objects.error.ErrorResponse;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import py.com.sodep.mf.cr.webapi.exception.RestAuhtorizationException;
+import py.com.sodep.mf.cr.webapi.exception.WebApiException;
+import py.com.sodep.mf.exchange.ExchangeConstants;
+import py.com.sodep.mf.exchange.objects.error.ErrorResponse;
 
 /**
  * 

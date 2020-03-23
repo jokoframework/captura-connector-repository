@@ -16,8 +16,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import py.com.sodep.mf.cr.CRServerLauncher.ConfError;
-import py.com.sodep.mf.cr.CRServerLauncher.PropReader;
 import py.com.sodep.mf.cr.conf.CRConfigurationParser;
 import py.com.sodep.mf.cr.conf.ConnectorDefinition;
 import py.com.sodep.mf.cr.conf.DefinitionDoesntMatchException;

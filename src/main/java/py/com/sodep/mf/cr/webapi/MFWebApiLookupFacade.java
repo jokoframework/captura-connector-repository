@@ -6,8 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import py.com.sodep.mf.cr.webapi.exception.RestAuhtorizationException;
 import py.com.sodep.mf.cr.webapi.exception.WebApiException;
@@ -20,8 +19,6 @@ import py.com.sodep.mf.exchange.objects.lookup.LookupTableDTO;
 import py.com.sodep.mf.exchange.objects.lookup.LookupTableDefinitionException;
 import py.com.sodep.mf.exchange.objects.lookup.LookupTableModificationRequest;
 import py.com.sodep.mf.exchange.objects.lookup.LookupTableModificationRequest.OPERATION_TYPE;
-
-import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * This is a class that encapsulates the REST details of the lookup table calls.

@@ -3,10 +3,10 @@ package py.com.sodep.mf.cr.webadmin;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import py.com.sodep.mf.cr.conf.CRConnection;
 import py.com.sodep.mf.cr.conf.CRExtractionUnit;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ConnectionDTO {
 	private CRConnection connection;

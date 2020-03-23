@@ -11,9 +11,9 @@ import java.util.TreeSet;
 import py.com.sodep.mf.cr.conf.CRColumn;
 import py.com.sodep.mf.cr.conf.TemporalConfigurationError;
 import py.com.sodep.mf.exchange.objects.data.ConditionalCriteria;
+import py.com.sodep.mf.exchange.objects.data.ConditionalCriteria.CONDITION_TYPE;
 import py.com.sodep.mf.exchange.objects.data.Criteria;
 import py.com.sodep.mf.exchange.objects.data.MFRestriction;
-import py.com.sodep.mf.exchange.objects.data.ConditionalCriteria.CONDITION_TYPE;
 
 public class CRUtilities {
 
