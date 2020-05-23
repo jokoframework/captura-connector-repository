@@ -23,11 +23,11 @@
 hs_err_pid*
 
 #Settings and credentials
-conf/
+/conf/
 
 #Logs
-logs/
+/logs/
 
 #Database
-work/
+/work/
 
