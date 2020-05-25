@@ -40,7 +40,7 @@ public class RepositoryDAO {
 	public RepositoryDAO(String filePath, String user, String pass) throws ClassNotFoundException {
 		Class.forName("org.h2.Driver");
 		// ;MVCC=TRUE
-		connPool = JdbcConnectionPool.create("jdbc:h2:" + filePath, user, pass);
+		connPool = JdbcConnectionPool.create("jdbc:h2:mem:" + filePath, user, pass);
 	}
 
 	public void defineDB() throws SQLException {
