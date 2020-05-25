@@ -30,6 +30,7 @@ import py.com.sodep.mf.cr.webapi.exception.RestAuhtorizationException;
 import py.com.sodep.mf.cr.webapi.exception.WebApiException;
 import py.com.sodep.mf.exchange.MFDataHelper;
 import py.com.sodep.mf.exchange.MFLoookupTableDefinition;
+import py.com.sodep.mf.exchange.PagedData;
 import py.com.sodep.mf.exchange.objects.data.ConditionalCriteria;
 import py.com.sodep.mf.exchange.objects.data.MFOperationResult;
 
@@ -51,6 +52,8 @@ public class LookupPopulator implements Runnable {
 
 	private Object myThreadLock = new Object();
 	private Thread myThread;
+	
+	private static boolean resetLookupTable = true;
 
 	public LookupPopulator(CRServer server, MultiDBManager dbManager, CRExtractionUnit extUnit,
 			RepositoryDAO repositoryDAO) {
@@ -770,6 +773,26 @@ public class LookupPopulator implements Runnable {
 		h2Conn.commit();
 	}
 
+	/*Delete all entries from the LookupTable*/
+	private void resetLookupFirstTime()
+	{
+		try
+		{
+			if(resetLookupTable==true)
+			{
+				restClient.login();
+				MFWebApiLookupFacade lookupFacade = new MFWebApiLookupFacade(restClient);
+				lookupFacade.delete(extUnit.getLookupId(), null);
+				restClient.logout();
+				logger.debug("The LookupTable was reset");
+			}
+			resetLookupTable=false;
+		}
+		catch (Exception e) 
+		{
+			logger.error(e);
+		}
+	}
 	@Override
 	public void run() {
 		logger.info("Starting thread for extraction unit #" + extUnit.getId());
@@ -786,14 +809,12 @@ public class LookupPopulator implements Runnable {
 
 			elapsedTime = System.currentTimeMillis();
 			try {
-
 				// Analyze the SQL and import in the local database the rows
 				// The rows will be specially marked so the pushData method can
 				// pick up them and send the modifications to the server
+				resetLookupFirstTime();
 				localSynchronization();
-
 				pushData();
-
 			} catch (Throwable e) {
 				// a configuration error might happen if something changed
 				// on the source DB. We are only going to stop the server if
