@@ -10,7 +10,7 @@
 	        <Pattern>%d{yyyy-MM-dd HH:mm:ss} [%c] %-5p - %m%n</Pattern>
 	    </PatternLayout>
 	    <Policies>
-	        <TimeBasedTriggeringPolicy filePattern="logs/app.log.%d{yyyy-MM-dd}.log.gz" />
+	        <TimeBasedTriggeringPolicy interval="1" />
 	    </Policies>
 	    <DefaultRolloverStrategy max="5" />
 	</RollingFile>

@@ -30,7 +30,6 @@ import py.com.sodep.mf.cr.webapi.exception.RestAuhtorizationException;
 import py.com.sodep.mf.cr.webapi.exception.WebApiException;
 import py.com.sodep.mf.exchange.MFDataHelper;
 import py.com.sodep.mf.exchange.MFLoookupTableDefinition;
-import py.com.sodep.mf.exchange.PagedData;
 import py.com.sodep.mf.exchange.objects.data.ConditionalCriteria;
 import py.com.sodep.mf.exchange.objects.data.MFOperationResult;
 
@@ -785,8 +784,8 @@ public class LookupPopulator implements Runnable {
 				lookupFacade.delete(extUnit.getLookupId(), null);
 				restClient.logout();
 				logger.debug("The LookupTable was reset");
+				resetLookupTable=false;
 			}
-			resetLookupTable=false;
 		}
 		catch (Exception e) 
 		{

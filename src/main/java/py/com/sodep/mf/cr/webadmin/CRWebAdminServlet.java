@@ -119,10 +119,10 @@ public class CRWebAdminServlet extends HttpServlet {
 			return;
 		}
 
-		if (extractionUnit.hasEmptyFields()) {
+		/*if (extractionUnit.hasEmptyFields()) {
 			respondWithError(request, response, SC_UNPROCESSABLE_ENTITY, CRWebAdminErrors.EMPTY_FIELDS);
 			return;
-		}
+		}*/
 
 		CRConnection connection = null;
 		List<CRColumn> columns = null;
@@ -132,7 +132,7 @@ public class CRWebAdminServlet extends HttpServlet {
 				connection = c.getConnection();
 			}
 		}
-
+		//Obtengo las columnas correspondientes al query
 		if (connection != null) {
 			try {
 				columns = CRServer.columnsForExtractionUnit(connection, extractionUnit);
@@ -146,6 +146,7 @@ public class CRWebAdminServlet extends HttpServlet {
 
 			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 			String jsonResponse = ow.writeValueAsString(columns);
+			
 			respondWithJson(request, response, jsonResponse);
 		} else {
 			respondWithError(request, response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
@@ -284,6 +285,12 @@ public class CRWebAdminServlet extends HttpServlet {
 
 		if (extractionUnit.hasEmptyFields()) {
 			respondWithError(request, response, SC_UNPROCESSABLE_ENTITY, CRWebAdminErrors.EMPTY_FIELDS);
+			return;
+		}
+		
+		// make sure you have selected a primary key
+		if (!extractionUnit.hasPrimaryKey()) {
+			respondWithError(request, response, SC_UNPROCESSABLE_ENTITY, CRWebAdminErrors.PK_NOT_SPECIFIED);
 			return;
 		}
 
