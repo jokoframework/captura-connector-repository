@@ -1,10 +1,13 @@
 package py.com.sodep.mf.cr;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
@@ -126,7 +129,9 @@ public class CRServerLauncher {
 			
 			if (mode.equals("XML")) {
 				CRConfigurationParser parser = new CRConfigurationParser();
-
+				//This will create parent folders if do not exist and create a file if not exists 
+				//and throw a exception if file object is a directory or cannot be written to.
+				FileOutputStream s = FileUtils.openOutputStream(new File(xmlFile));
 				FileReader file = new FileReader(xmlFile);
 				desDefinition = parser.parse(file);
 				if(desDefinition==null) 
