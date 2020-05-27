@@ -132,7 +132,7 @@ public class CRWebAdminServlet extends HttpServlet {
 				connection = c.getConnection();
 			}
 		}
-		//Obtengo las columnas correspondientes al query
+		//Get the columns corresponding to the sql query
 		if (connection != null) {
 			try {
 				columns = CRServer.columnsForExtractionUnit(connection, extractionUnit);
@@ -304,7 +304,7 @@ public class CRWebAdminServlet extends HttpServlet {
 
 		// rebuild the tree after the change
 		buildConnectionTree();
-
+		
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
