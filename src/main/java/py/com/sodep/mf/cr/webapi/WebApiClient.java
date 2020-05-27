@@ -47,7 +47,7 @@ import py.com.sodep.mf.exchange.objects.error.ErrorResponse;
  * @author danicricco
  * 
  */
-//Para conectarse a mf_cr.rest.baseURL
+//To connect to mf_cr.rest.baseURL
 public class WebApiClient {
 
 	private static final Logger logger = LogManager.getLogger(WebApiClient.class);

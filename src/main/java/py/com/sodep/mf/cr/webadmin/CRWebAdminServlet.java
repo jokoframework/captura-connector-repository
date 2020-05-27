@@ -400,6 +400,8 @@ public class CRWebAdminServlet extends HttpServlet {
 		}
 
 		CRConfigurationParser parser = new CRConfigurationParser();
+		if(connectorDefinition==null)
+			connectorDefinition = new ConnectorDefinition();
 		FileWriter writer = new FileWriter(connectorDefinition.getSourceFile());
 		connectorDefinition.addConnection(connection);
 
@@ -442,20 +444,24 @@ public class CRWebAdminServlet extends HttpServlet {
 
 	private void buildConnectionTree() {
 		this.connectionTree = new ArrayList<ConnectionDTO>();
-
-		for (CRConnection conn : this.connectorDefinition.getConnections()) {
-			ConnectionDTO connectionDTO = new ConnectionDTO();
-			connectionDTO.setConnection(conn);
-			connectionDTO.setLabel(conn.getId());
-			connectionDTO.setId(conn.getId());
-
-			for (CRExtractionUnit eu : this.connectorDefinition.getExtractionUnits()) {
-				if (eu.getConnectionId().equals(conn.getId())) {
-					connectionDTO.addExtractionUnit(eu);
+		
+		if(this.connectorDefinition!=null && this.connectorDefinition.getConnections()!=null)
+		{
+			for (CRConnection conn : this.connectorDefinition.getConnections()) {
+				ConnectionDTO connectionDTO = new ConnectionDTO();
+				connectionDTO.setConnection(conn);
+				connectionDTO.setLabel(conn.getId());
+				connectionDTO.setId(conn.getId());
+				if(this.connectorDefinition!=null && this.connectorDefinition.getExtractionUnits()!=null)
+				{
+					for (CRExtractionUnit eu : this.connectorDefinition.getExtractionUnits()) {
+						if (eu.getConnectionId().equals(conn.getId())) {
+							connectionDTO.addExtractionUnit(eu);
+						}
+					}
 				}
+				this.connectionTree.add(connectionDTO);
 			}
-
-			this.connectionTree.add(connectionDTO);
 		}
 	}
 
