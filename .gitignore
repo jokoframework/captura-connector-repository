@@ -12,6 +12,7 @@
 
 # Package Files #
 *.jar
+!captura-exchange-0.0.6.jar
 *.war
 *.nar
 *.ear
@@ -27,7 +28,3 @@ hs_err_pid*
 
 #Logs
 /logs/
-
-#Database
-/work/
-
