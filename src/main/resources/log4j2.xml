@@ -10,7 +10,7 @@
 	        <Pattern>%d{yyyy-MM-dd HH:mm:ss} [%c] %-5p - %m%n</Pattern>
 	    </PatternLayout>
 	    <Policies>
-	        <TimeBasedTriggeringPolicy filePattern="logs/app.log.%d{yyyy-MM-dd}.log.gz" />
+	        <TimeBasedTriggeringPolicy interval="1" />
 	    </Policies>
 	    <DefaultRolloverStrategy max="5" />
 	</RollingFile>
@@ -26,7 +26,7 @@
 	<Logger name="org.hibernate.tool.hbm2ddl" level="info"/>
 	<Logger name="py.com.sodep.mobileforms" level="debug"/>
 	<Logger name="org.apache.commons.beanutils" level="info"/>
-	<Logger name="py.com.sodep.mf.cr" level="debug"/>
+	<Logger name="py.com.sodep.mf.cr" level="trace"/>
     <Root level="debug">
       <AppenderRef ref="console"/>
       <AppenderRef ref="file"/>

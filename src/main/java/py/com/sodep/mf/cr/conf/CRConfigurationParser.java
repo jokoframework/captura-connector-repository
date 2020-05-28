@@ -47,7 +47,12 @@ public class CRConfigurationParser {
 	}
 
 	public ConnectorDefinition parse(Reader r) {
-		return (ConnectorDefinition) xstream.fromXML(r);
+		try {
+			return (ConnectorDefinition) xstream.fromXML(r);
+		}catch(Exception e){
+			return null;
+		}
+		
 
 	}
 

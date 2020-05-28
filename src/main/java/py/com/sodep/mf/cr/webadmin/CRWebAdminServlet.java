@@ -119,10 +119,10 @@ public class CRWebAdminServlet extends HttpServlet {
 			return;
 		}
 
-		if (extractionUnit.hasEmptyFields()) {
+		/*if (extractionUnit.hasEmptyFields()) {
 			respondWithError(request, response, SC_UNPROCESSABLE_ENTITY, CRWebAdminErrors.EMPTY_FIELDS);
 			return;
-		}
+		}*/
 
 		CRConnection connection = null;
 		List<CRColumn> columns = null;
@@ -132,7 +132,7 @@ public class CRWebAdminServlet extends HttpServlet {
 				connection = c.getConnection();
 			}
 		}
-
+		//Get the columns corresponding to the sql query
 		if (connection != null) {
 			try {
 				columns = CRServer.columnsForExtractionUnit(connection, extractionUnit);
@@ -146,6 +146,7 @@ public class CRWebAdminServlet extends HttpServlet {
 
 			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 			String jsonResponse = ow.writeValueAsString(columns);
+			
 			respondWithJson(request, response, jsonResponse);
 		} else {
 			respondWithError(request, response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
@@ -286,6 +287,12 @@ public class CRWebAdminServlet extends HttpServlet {
 			respondWithError(request, response, SC_UNPROCESSABLE_ENTITY, CRWebAdminErrors.EMPTY_FIELDS);
 			return;
 		}
+		
+		// make sure you have selected a primary key
+		if (!extractionUnit.hasPrimaryKey()) {
+			respondWithError(request, response, SC_UNPROCESSABLE_ENTITY, CRWebAdminErrors.PK_NOT_SPECIFIED);
+			return;
+		}
 
 		CRConfigurationParser parser = new CRConfigurationParser();
 		FileWriter writer = new FileWriter(connectorDefinition.getSourceFile());
@@ -297,7 +304,7 @@ public class CRWebAdminServlet extends HttpServlet {
 
 		// rebuild the tree after the change
 		buildConnectionTree();
-
+		
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
@@ -393,6 +400,8 @@ public class CRWebAdminServlet extends HttpServlet {
 		}
 
 		CRConfigurationParser parser = new CRConfigurationParser();
+		if(connectorDefinition==null)
+			connectorDefinition = new ConnectorDefinition();
 		FileWriter writer = new FileWriter(connectorDefinition.getSourceFile());
 		connectorDefinition.addConnection(connection);
 
@@ -435,20 +444,24 @@ public class CRWebAdminServlet extends HttpServlet {
 
 	private void buildConnectionTree() {
 		this.connectionTree = new ArrayList<ConnectionDTO>();
-
-		for (CRConnection conn : this.connectorDefinition.getConnections()) {
-			ConnectionDTO connectionDTO = new ConnectionDTO();
-			connectionDTO.setConnection(conn);
-			connectionDTO.setLabel(conn.getId());
-			connectionDTO.setId(conn.getId());
-
-			for (CRExtractionUnit eu : this.connectorDefinition.getExtractionUnits()) {
-				if (eu.getConnectionId().equals(conn.getId())) {
-					connectionDTO.addExtractionUnit(eu);
+		
+		if(this.connectorDefinition!=null && this.connectorDefinition.getConnections()!=null)
+		{
+			for (CRConnection conn : this.connectorDefinition.getConnections()) {
+				ConnectionDTO connectionDTO = new ConnectionDTO();
+				connectionDTO.setConnection(conn);
+				connectionDTO.setLabel(conn.getId());
+				connectionDTO.setId(conn.getId());
+				if(this.connectorDefinition!=null && this.connectorDefinition.getExtractionUnits()!=null)
+				{
+					for (CRExtractionUnit eu : this.connectorDefinition.getExtractionUnits()) {
+						if (eu.getConnectionId().equals(conn.getId())) {
+							connectionDTO.addExtractionUnit(eu);
+						}
+					}
 				}
+				this.connectionTree.add(connectionDTO);
 			}
-
-			this.connectionTree.add(connectionDTO);
 		}
 	}
 

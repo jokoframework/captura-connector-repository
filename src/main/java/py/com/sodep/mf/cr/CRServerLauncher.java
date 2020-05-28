@@ -1,10 +1,13 @@
 package py.com.sodep.mf.cr;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
@@ -28,19 +31,19 @@ import py.com.sodep.mf.cr.webapi.exception.WebApiException;
 public class CRServerLauncher {
 	private static final Logger logger = LogManager.getLogger(CRServerLauncher.class);
 	
-	private static String propertyFilePath = "conf/mf_cr.properties"; //path a las configuraciones
+	private static String propertyFilePath = "conf/mf_cr.properties"; //Settings path
 	
 	public static final String PROP_MODE = "mf_cr.mode";
-	public static final String PROP_BASEURL = "mf_cr.rest.baseURL";	//URL de captura
-	public static final String PROP_REST_APP_ID = "mf_cr.rest.applicationId";	//Id de captura
-	public static final String PROP_REST_USER = "mf_cr.rest.user";	//Usuario de cuenta captura
-	public static final String PROP_REST_PASS = "mf_cr.rest.pass";	//Contrasena de cuenta captura
+	public static final String PROP_BASEURL = "mf_cr.rest.baseURL";	//Captura URL
+	public static final String PROP_REST_APP_ID = "mf_cr.rest.applicationId";	//Captura ID
+	public static final String PROP_REST_USER = "mf_cr.rest.user";	//Captura User
+	public static final String PROP_REST_PASS = "mf_cr.rest.pass";	//Captura Password
 	
-	public static final String PROP_DB_USER = "mf_cr.db.user";	//usuario DB h2
-	public static final String PROP_DB_PASS = "mf_cr.db.pass";	//contrasena DB h2
-	public static final String PROP_DB_FILEPATH = "mf_cr.db.filePath";	//path DB h2
+	public static final String PROP_DB_USER = "mf_cr.db.user";	//DB H2 User
+	public static final String PROP_DB_PASS = "mf_cr.db.pass";	//DB H2 Password
+	public static final String PROP_DB_FILEPATH = "mf_cr.db.filePath";	//DB H2 PATH
 	public static final String PROP_AUTHENTICATE_ON_STARTUP = "mf_cr.authenticateOnStartup";
-	public static final String PROP_XML_FILE = "mf_cr.xml.filePath";	//path al xml que configura la conexion a DB exterior
+	public static final String PROP_XML_FILE = "mf_cr.xml.filePath";	//Path to the xml that configures the connection to the external DB
 	
 	public static final String PROP_WEBADMIN_WAKE_ON_STARTUP = "mf_cr.webadmin.wakeOnStartup";
 	public static final String PROP_WEBADMIN_PORT = "mf_cr.webadmin.port";
@@ -58,14 +61,14 @@ public class CRServerLauncher {
 	
 	@Bean
 	public void launcher() throws Exception {
-		//Importa las propiedades de mf_cr.propierties
+		//Imports the properties of mf_cr.propierties
 		Properties properties = new Properties();
 		Properties p = loadProperties(properties, propertyFilePath);
 		
 		if (p == null) {
 			System.exit(CRServerErrors.PROPERTY_FILE_NOT_FOUND);
 		}
-		//Se extraen las propiedades de mf_cr.propierties
+		//The mf_cr.propierties are extracted
 		String mode = PropReader.mode(p);
 		String restBaseURL = (String) p.get(PROP_BASEURL);
 		String restUser = (String) p.get(PROP_REST_USER);
@@ -86,7 +89,7 @@ public class CRServerLauncher {
 		}
 		
 		WebApiClient restClient = new WebApiClient(restBaseURL, restUser, restPass);
-		//Login a mf_cr.rest.baseURL
+		//Login to mf_cr.rest.baseURL
 		if (authenticateOnStartup) {
 			logger.info("Testing connection...");
 			boolean success;
@@ -126,18 +129,28 @@ public class CRServerLauncher {
 			
 			if (mode.equals("XML")) {
 				CRConfigurationParser parser = new CRConfigurationParser();
-
+				//This will create parent folders if do not exist and create a file if not exists 
+				//and throw a exception if file object is a directory or cannot be written to.
+				File pre_file = new File(xmlFile);
+				pre_file.getParentFile().mkdirs(); // Will create parent directories if not exists
+				pre_file.createNewFile(); // Will create the file if not exists
 				FileReader file = new FileReader(xmlFile);
+				
 				desDefinition = parser.parse(file);
+				if(desDefinition==null) 
+				{
+					desDefinition = new ConnectorDefinition();
+				}
 				desDefinition.setSourceFile(xmlFile);
 				server.configure(desDefinition);
 				int countOfStartedThreads = server.start();
-				if (countOfStartedThreads > 0) {
+				//if (countOfStartedThreads > 0) {
 					osSignalhandler = new OSSignalHandler(server);
 					osSignalhandler.initializeOSSignals();
-				} else {
-					logger.warn("There is no active extraction unit.");
-				}
+				//} else {
+					//logger.warn("There is no active extraction unit.");
+				//}
+				
 			}
 			
 			if (webAdminWakeOnStartup) {

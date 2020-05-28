@@ -1,5 +1,6 @@
 package py.com.sodep.mf.cr.conf;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -15,7 +16,7 @@ public class ConnectorDefinition {
 	}
 
 	public void setConnections(List<CRConnection> connections) {
-		this.connections = connections;
+			this.connections = connections;
 	}
 
 	public List<CRExtractionUnit> getExtractionUnits() {
@@ -27,10 +28,16 @@ public class ConnectorDefinition {
 	}
 	
 	public void addConnection(CRConnection connection) {
+		if(this.connections==null)
+		{
+			this.connections = new ArrayList<CRConnection>();
+		}
 		this.connections.add(connection);
 	}
 	
 	public void addExtractionUnit(CRExtractionUnit eu) {
+		if(this.extractionUnits==null)
+			this.extractionUnits = new ArrayList<CRExtractionUnit>();
 		this.extractionUnits.add(eu);
 	}
 

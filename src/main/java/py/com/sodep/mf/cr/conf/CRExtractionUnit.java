@@ -129,6 +129,16 @@ public class CRExtractionUnit {
 		return StringUtils.isEmpty(id) || StringUtils.isEmpty(connectionId) || StringUtils.isEmpty(sql)
 				|| StringUtils.isEmpty(description) || frequencyInSeconds == null || insertBatchSize == null;
 	}
+	
+	public boolean hasPrimaryKey() {
+		for(CRColumn colum : columns) {
+			if(colum.isPKMember())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 
 	@Override
 	public int hashCode() {

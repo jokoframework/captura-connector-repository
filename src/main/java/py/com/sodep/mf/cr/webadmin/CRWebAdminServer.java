@@ -30,7 +30,8 @@ public class CRWebAdminServer {
 		this.username = username;
 		this.password = password;
 		this.server = new Server(port);
-		this.servlet = new CRWebAdminServlet(definition);
+		if(definition!=null)
+			this.servlet = new CRWebAdminServlet(definition);
 	}
 
 	public void start() throws Exception {
@@ -39,6 +40,8 @@ public class CRWebAdminServer {
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		context.setSecurityHandler(securityHandler);
 		context.setContextPath("/");
+		if(this.servlet==null)
+			this.servlet = new CRWebAdminServlet(null);
 		context.addServlet(new ServletHolder(this.servlet), "/*");
 
 		ContextHandler assetsContext = new ContextHandler();

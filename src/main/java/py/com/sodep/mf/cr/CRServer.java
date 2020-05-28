@@ -129,9 +129,12 @@ public class CRServer implements SignalHandler {
 
 		restClient.login();
 		try {
-			for (CRExtractionUnit crExtractionUnit : lookups) {
-				CRExtractionUnit savedExtUnit = configureLookup(crExtractionUnit);
-				this.lookupThreads.add(new LookupPopulator(this, dbManager, savedExtUnit, repositoryDAO));
+			if(lookups!=null)
+			{
+				for (CRExtractionUnit crExtractionUnit : lookups) {
+					CRExtractionUnit savedExtUnit = configureLookup(crExtractionUnit);
+					this.lookupThreads.add(new LookupPopulator(this, dbManager, savedExtUnit, repositoryDAO));
+				}
 			}
 		} finally {
 			restClient.logout();
@@ -589,9 +592,12 @@ public class CRServer implements SignalHandler {
 
 		try {
 			conn = repositoryDAO.open();
-
-			for (CRConnection crConnection : connections) {
-				addOrUpdateConnection(conn, crConnection, true);
+			
+			if(connections!=null)
+			{
+				for (CRConnection crConnection : connections) {
+					addOrUpdateConnection(conn, crConnection, true);
+				}
 			}
 
 			conn.commit();
