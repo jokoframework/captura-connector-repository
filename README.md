@@ -28,8 +28,11 @@ mvn install:install-file \
 * En `conf/mf_cr.properties` debe establecer los parámetros requeridos, como mínimo, la información de autenticación requerida para llegar al servidor de formularios, que son los siguientes cuatro campos:
 
 > mf_cr.rest.user `PUT_HERE_YOUR_CAPTURA_USER`
+
 > mf_cr.rest.pass `PUT_HERE_YOUT_CAPTURA_PASSWORD`
+
 > mf_cr.rest.baseURL `PUT_HERE_YOUR_CAPTURA_BASE_URL`
+
 > mf_cr.rest.applicationId `PUT_HERE_YOUR_CAPTURA_APPLICATION_ID`
 
 * Ahora puede ejecutar el proyecto, ejecute el siguiente comando en una ventana de terminal (en el directorio `captura-connector-repository`):
