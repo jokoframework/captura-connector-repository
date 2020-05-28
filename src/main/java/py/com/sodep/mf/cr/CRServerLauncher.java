@@ -131,8 +131,11 @@ public class CRServerLauncher {
 				CRConfigurationParser parser = new CRConfigurationParser();
 				//This will create parent folders if do not exist and create a file if not exists 
 				//and throw a exception if file object is a directory or cannot be written to.
-				FileOutputStream s = FileUtils.openOutputStream(new File(xmlFile));
+				File pre_file = new File(xmlFile);
+				pre_file.getParentFile().mkdirs(); // Will create parent directories if not exists
+				pre_file.createNewFile(); // Will create the file if not exists
 				FileReader file = new FileReader(xmlFile);
+				
 				desDefinition = parser.parse(file);
 				if(desDefinition==null) 
 				{
