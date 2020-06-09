@@ -21,7 +21,7 @@ mvn install:install-file \
   -DartifactId=captura-exchange \
   -Dpackaging=jar \
   -Dversion=0.0.6 \
-  -Dfile=./src/main/resources/captura-exchange-0.0.6.jar \
+  -Dfile=./lib/captura-exchange-0.0.6.jar \
   -DgeneratePom=true
 ```
 * Ejecute `scripts/prepare-config-templates.sh`, esto creará el archivo `conf/mf_cr.properties` donde se configuran las distintas credenciales.
