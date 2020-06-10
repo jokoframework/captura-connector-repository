@@ -65,5 +65,7 @@ mvn install:install-file \
 * Tras ingresar la consulta sql, se mostrarán los columnas relacionadas a la misma, seleccione manualmente su `Primary Key`, luego seleccione `Active` para activarlo y guarde los cambios seleccionando `Save Extraction Unit`.
 * Para que los cambios tengan efecto, deberá reiniciar el proyecto.
 
+>**Observación:** El procedimiento anterior genera automáticamente el archivo `conf/custom_des.xml` con la configuración de los extractions units, si por algún motivo desea configurar este archivo manualmente, luego de ejecutar `scripts/prepare-config-templates.sh` se genera el archivo `conf/custom_des.sample.xml`, el cual puede utilizar como ejemplo para configurar manualmente su `conf/custom_des.xml`.
+
 
 
