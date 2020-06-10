@@ -11,3 +11,4 @@ if [[ ! -e $dir_logs ]]; then
     mkdir -v $dir_logs
 fi
 cp -v ../mf_cr.sample.properties ../conf/mf_cr.properties 
+cp -v ../custom_des.sample.xml ../conf/custom_des.sample.xml 

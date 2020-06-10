@@ -1,0 +1,22 @@
+<crdef>
+  <connections>
+    <connection id="New Connection">
+      <url>jdbc:postgresql://localhost:5432/dvdrental</url>
+      <user>postgres</user>
+      <pass>postgres</pass>
+      <driver>org.postgresql.Driver</driver>
+    </connection>
+  </connections>
+  <extractionUnits>
+    <extUnit id="cities" connectionId="New Connection" active="true" stopOnError="true" frequencyInSeconds="100" insertBatchSize="1000">
+      <sql>select * from city</sql>
+      <description>cities</description>
+      <columns>
+        <column sourceColumn="country_id" targetColumn="country_id" targetType="NUMBER" triggerUpdate="true" isPKMember="false"/>
+        <column sourceColumn="last_update" targetColumn="last_update" targetType="DATE" triggerUpdate="true" isPKMember="false"/>
+        <column sourceColumn="city_id" targetColumn="city_id" targetType="NUMBER" triggerUpdate="true" isPKMember="true"/>
+        <column sourceColumn="city" targetColumn="city" targetType="STRING" triggerUpdate="true" isPKMember="false"/>
+      </columns>
+    </extUnit>
+  </extractionUnits>
+</crdef>
